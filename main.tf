@@ -25,7 +25,26 @@ resource "yandex_compute_instance" "example" {
     }
   }
 
+  metadata = {
+    user-data = <<-EOF
+      #cloud-config
+      packages:
+        - busybox
+      write_files:
+        - path: /opt/init_script.sh
+          content: |
+            #!/bin/bash
+            echo "Hello World!"
+            echo "Hello, World!" > index.html
+            nohup busybox httpd -f -p 8080 &
+          permissions: '0755'
+      runcmd:
+        - /opt/init_script.sh
+    EOF
+  }
+
   network_interface {
+    nat       = true
     subnet_id = "e2l5i4p8utd89i0ad456"
   }
 

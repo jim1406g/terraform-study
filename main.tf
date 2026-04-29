@@ -7,6 +7,10 @@ terraform {
   required_version = ">= 0.13"
 }
 
+data "yandex_vpc_network" "net" {
+  name = "default"
+}
+
 variable "service_account" {
   default = {
     id       = "ajenc66cncovv74n6act"
@@ -16,11 +20,21 @@ variable "service_account" {
   type        = map(string)
 }
 
-provider "yandex" {
-  zone                     = "ru-central1-b"
-  cloud_id                 = "b1gv7nnhp4nje6bct6la"
-  folder_id                = "b1g197129s2l7e4j8o6s"
-  service_account_key_file = var.service_account.key_file
+variable "zone_subnet" {
+  default = {
+    zone0 = {
+      zone      = "ru-central1-b"
+      subnet    = "default-ru-central1-b"
+      subnet_id = "e2l5i4p8utd89i0ad456"
+    }
+    zone1 = {
+      zone      = "ru-central1-a"
+      subnet    = "default-ru-central1-a"
+      subnet_id = "e9btg82r2u94c1432bbn"
+    }
+  }
+  description = "Zones and Subnets"
+  type        = map(map(string))
 }
 
 variable "server_port" {
@@ -29,12 +43,15 @@ variable "server_port" {
   type        = number
 }
 
-data "yandex_vpc_network" "net" {
-  name = "default"
+provider "yandex" {
+  zone                     = var.zone_subnet.zone0.zone
+  cloud_id                 = "b1gv7nnhp4nje6bct6la"
+  folder_id                = "b1g197129s2l7e4j8o6s"
+  service_account_key_file = var.service_account.key_file
 }
 
 resource "yandex_vpc_security_group" "instance" {
-  name       = "terraform-example-instance"
+  name       = "terraform-example-instance-security-group"
   network_id = data.yandex_vpc_network.net.id
 
   ingress {
@@ -51,13 +68,35 @@ resource "yandex_vpc_security_group" "instance" {
   }
 }
 
+resource "yandex_vpc_security_group" "alb" {
+  name       = "terraform-example-alb-security-group"
+  network_id = data.yandex_vpc_network.net.id
+
+  ingress {
+    protocol       = "TCP"
+    description    = "WEB"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 80
+  }
+
+  egress {
+    description    = "Permit ANY"
+    protocol       = "ANY"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 resource "yandex_compute_instance_group" "example" {
-  name               = "terraform-example-ig"
+  name               = "terraform-example-instance-group"
   service_account_id = var.service_account.id
 
   allocation_policy {
-    zones = ["ru-central1-a", "ru-central1-b"]
+    zones = [var.zone_subnet.zone0.zone, var.zone_subnet.zone1.zone]
+  }
+
+  application_load_balancer {
+    target_group_name        = "terraform-example-instance-target-group"
+    target_group_description = "terraform-example target group by instance group"
   }
 
   deploy_policy {
@@ -125,7 +164,74 @@ resource "yandex_compute_instance_group" "example" {
   }
 }
 
-output "public_ip" {
-  description = "The public IP addresses of the web servers"
-  value       = yandex_compute_instance_group.example.instances.*.network_interface.0.nat_ip_address
+resource "yandex_alb_backend_group" "example" {
+  name = "terraform-example-backend-group"
+
+  http_backend {
+    name             = "http-backend"
+    port             = var.server_port
+    target_group_ids = [yandex_compute_instance_group.example.application_load_balancer[0].target_group_id]
+
+    healthcheck {
+      interval = "5s"
+      timeout  = "3s"
+      http_healthcheck {
+        path = "/"
+      }
+    }
+  }
 }
+
+resource "yandex_alb_http_router" "example" {
+  name = "terraform-example-http-router"
+}
+
+resource "yandex_alb_virtual_host" "example" {
+  http_router_id = yandex_alb_http_router.example.id
+  name           = "terraform-example-alb-vhost"
+
+  route {
+    name = "default-route"
+
+    http_route {
+      http_route_action {
+        backend_group_id = yandex_alb_backend_group.example.id
+      }
+    }
+  }
+}
+
+resource "yandex_alb_load_balancer" "example" {
+  name               = "terraform-example-alb"
+  network_id         = data.yandex_vpc_network.net.id
+  security_group_ids = [yandex_vpc_security_group.alb.id]
+
+  allocation_policy {
+    location {
+      subnet_id = var.zone_subnet.zone0.subnet_id
+      zone_id   = var.zone_subnet.zone0.zone
+    }
+    location {
+      subnet_id = var.zone_subnet.zone1.subnet_id
+      zone_id   = var.zone_subnet.zone1.zone
+    }
+  }
+
+  listener {
+    name = "http"
+
+    endpoint {
+      address {
+        external_ipv4_address {}
+      }
+      ports = ["80"]
+    }
+
+    http {
+      handler {
+        http_router_id = yandex_alb_http_router.example.id
+      }
+    }
+  }
+}
+

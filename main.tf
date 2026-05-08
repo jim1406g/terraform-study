@@ -129,7 +129,7 @@ resource "yandex_compute_instance_group" "example" {
             #!/bin/bash
             echo "Hello World!"
             cat /opt/init_script.sh
-            echo "Hello, World!" > index.html
+            echo "Hello, World! (c) $(hostname)" > index.html
             nohup busybox httpd -f -p $${1:-8080} &
           permissions: '0755'
       bootcmd:

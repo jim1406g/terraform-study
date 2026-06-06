@@ -244,7 +244,9 @@ resource "yandex_alb_load_balancer" "example" {
 
     endpoint {
       address {
-        external_ipv4_address {}
+        external_ipv4_address {
+          address = "158.160.173.249"
+        }
       }
       ports = ["80"]
     }

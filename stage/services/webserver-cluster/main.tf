@@ -78,6 +78,8 @@ resource "yandex_compute_instance_group" "example" {
             echo "Hello World!"
             cat /opt/init_script.sh
             echo "Hello, World! (c) $(hostname)" > index.html
+            echo "DB:" >> index.html
+            echo "    ${data.terraform_remote_state.db.outputs.address}" >> index.html
             nohup busybox httpd -f -p $${1:-8080} &
           permissions: '0755'
       bootcmd:

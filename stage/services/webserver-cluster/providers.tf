@@ -12,7 +12,7 @@ terraform {
     }
     bucket = "terraform-up-and-running-state"
     region = "ru-central1"
-    key    = "terraform-study/terraform.tfstate"
+    key    = "terraform-study/stage/services/webserver-cluster/terraform.tfstate"
     # Статический ключ доступа для сервисного аккаунта (AWS-совместимый)
     # mkdir -p ~/.aws
     # cat > ~/.aws/credentials << EOF

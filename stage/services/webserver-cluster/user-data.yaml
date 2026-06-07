@@ -1,0 +1,20 @@
+#cloud-config
+packages:
+  - busybox
+write_files:
+  - path: /opt/init_script.sh
+    content: |
+      #!/bin/bash
+      echo "Hello World!"
+      cat /opt/init_script.sh
+      cat > index.html <<EOF
+      <h1>Hello, World! (c) $(hostname)</h1>
+      <p>DB address: ${db_address}</p>
+      <p>DB port: ${db_port}</p>
+      EOF
+      nohup busybox httpd -f -p ${server_port} &
+    permissions: '0755'
+bootcmd:
+  - /opt/init_script.sh
+runcmd:
+  - /opt/init_script.sh

@@ -67,26 +67,11 @@ resource "yandex_compute_instance_group" "example" {
     }
 
     metadata = {
-      user-data = <<-EOF
-      #cloud-config
-      packages:
-        - busybox
-      write_files:
-        - path: /opt/init_script.sh
-          content: |
-            #!/bin/bash
-            echo "Hello World!"
-            cat /opt/init_script.sh
-            echo "Hello, World! (c) $(hostname)" > index.html
-            echo "DB:" >> index.html
-            echo "    ${data.terraform_remote_state.db.outputs.address}" >> index.html
-            nohup busybox httpd -f -p $${1:-8080} &
-          permissions: '0755'
-      bootcmd:
-        - /opt/init_script.sh ${var.server_port}
-      runcmd:
-        - /opt/init_script.sh ${var.server_port}
-    EOF
+      user-data = templatefile("user-data.yaml", {
+        db_address  = data.terraform_remote_state.db.outputs.address
+        db_port     = "3306"
+        server_port = var.server_port
+      })
     }
 
     network_interface {

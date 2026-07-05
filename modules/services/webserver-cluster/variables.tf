@@ -1,3 +1,15 @@
+variable "alb_external_address" {
+  default     = "158.160.173.249"
+  description = "Public address for ALB"
+  type        = string
+}
+
+variable "server_port" {
+  default     = 8080
+  description = "Port for HTTP requests"
+  type        = number
+}
+
 variable "service_account" {
   default = {
     id       = "ajenc66cncovv74n6act"
@@ -22,10 +34,4 @@ variable "zone_subnet" {
   }
   description = "Zones and Subnets"
   type        = map(map(string))
-}
-
-variable "server_port" {
-  default     = 8080
-  description = "Port for HTTP requests"
-  type        = number
 }

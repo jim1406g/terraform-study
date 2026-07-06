@@ -1,3 +1,9 @@
+variable "network_name" {
+  default     = "default"
+  description = "Yandex cloud network Name"
+  type        = string
+}
+
 variable "service_account" {
   default = {
     id       = "ajenc66cncovv74n6act"

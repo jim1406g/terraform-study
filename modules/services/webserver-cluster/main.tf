@@ -1,5 +1,5 @@
 resource "yandex_vpc_security_group" "instance" {
-  name       = "terraform-example-instance-security-group"
+  name       = "${var.cluster_name}-instance-security-group"
   network_id = data.yandex_vpc_network.net.id
 
   ingress {
@@ -17,7 +17,7 @@ resource "yandex_vpc_security_group" "instance" {
 }
 
 resource "yandex_vpc_security_group" "alb" {
-  name       = "terraform-example-alb-security-group"
+  name       = "${var.cluster_name}-alb-security-group"
   network_id = data.yandex_vpc_network.net.id
 
   ingress {
@@ -34,8 +34,8 @@ resource "yandex_vpc_security_group" "alb" {
   }
 }
 
-resource "yandex_compute_instance_group" "example" {
-  name               = "terraform-example-instance-group"
+resource "yandex_compute_instance_group" "webcl" {
+  name               = "${var.cluster_name}-instance-group"
   service_account_id = var.service_account_id
 
   allocation_policy {
@@ -43,8 +43,8 @@ resource "yandex_compute_instance_group" "example" {
   }
 
   application_load_balancer {
-    target_group_name        = "terraform-example-instance-target-group"
-    target_group_description = "terraform-example target group by instance group"
+    target_group_name        = "${var.cluster_name}-instance-target-group"
+    target_group_description = "${var.cluster_name} target group by instance group"
   }
 
   deploy_policy {
@@ -56,7 +56,7 @@ resource "yandex_compute_instance_group" "example" {
   }
 
   instance_template {
-    name        = "terraform-example-{instance.index}"
+    name        = "${var.cluster_name}-{instance.index}"
     platform_id = "standard-v1"
 
     boot_disk {
@@ -99,13 +99,13 @@ resource "yandex_compute_instance_group" "example" {
   }
 }
 
-resource "yandex_alb_backend_group" "example" {
-  name = "terraform-example-backend-group"
+resource "yandex_alb_backend_group" "webcl" {
+  name = "${var.cluster_name}-backend-group"
 
   http_backend {
     name             = "http-backend"
     port             = var.server_port
-    target_group_ids = [yandex_compute_instance_group.example.application_load_balancer[0].target_group_id]
+    target_group_ids = [yandex_compute_instance_group.webcl.application_load_balancer[0].target_group_id]
 
     healthcheck {
       interval = "5s"
@@ -117,27 +117,27 @@ resource "yandex_alb_backend_group" "example" {
   }
 }
 
-resource "yandex_alb_http_router" "example" {
-  name = "terraform-example-http-router"
+resource "yandex_alb_http_router" "webcl" {
+  name = "${var.cluster_name}-http-router"
 }
 
-resource "yandex_alb_virtual_host" "example" {
-  http_router_id = yandex_alb_http_router.example.id
-  name           = "terraform-example-alb-vhost"
+resource "yandex_alb_virtual_host" "webcl" {
+  http_router_id = yandex_alb_http_router.webcl.id
+  name           = "${var.cluster_name}-alb-vhost"
 
   route {
     name = "default-route"
 
     http_route {
       http_route_action {
-        backend_group_id = yandex_alb_backend_group.example.id
+        backend_group_id = yandex_alb_backend_group.webcl.id
       }
     }
   }
 }
 
-resource "yandex_alb_load_balancer" "example" {
-  name               = "terraform-example-alb"
+resource "yandex_alb_load_balancer" "webcl" {
+  name               = "${var.cluster_name}-alb"
   network_id         = data.yandex_vpc_network.net.id
   security_group_ids = [yandex_vpc_security_group.alb.id]
 
@@ -166,7 +166,7 @@ resource "yandex_alb_load_balancer" "example" {
 
     http {
       handler {
-        http_router_id = yandex_alb_http_router.example.id
+        http_router_id = yandex_alb_http_router.webcl.id
       }
     }
   }

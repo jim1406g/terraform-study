@@ -5,9 +5,9 @@ data "terraform_remote_state" "db" {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
     }
-    bucket = "terraform-up-and-running-state"
+    bucket = var.db_remote_state_bucket
     region = "ru-central1"
-    key    = "terraform-study/stage/data-stores/mysql/terraform.tfstate"
+    key    = var.db_remote_state_key
 
     profile = "jim1406-sa"
 
@@ -18,5 +18,5 @@ data "terraform_remote_state" "db" {
 }
 
 data "yandex_vpc_network" "net" {
-  name = "default"
+  name = var.network_name
 }

@@ -6,8 +6,9 @@ variable "network_name" {
 
 variable "service_account" {
   default = {
-    id       = "ajenc66cncovv74n6act"
-    key_file = "/home/jim1406/.config/yandex-cloud/jim1406-sa-key.json"
+    id         = "ajenc66cncovv74n6act"
+    key_file   = "/home/jim1406/.config/yandex-cloud/jim1406-sa-key.json"
+    s3_profile = "jim1406-sa"
   }
   description = "Yandex IAM Service Account"
   type        = map(string)

@@ -9,7 +9,7 @@ data "terraform_remote_state" "db" {
     region = "ru-central1"
     key    = var.db_remote_state_key
 
-    profile = "jim1406-sa"
+    profile = var.db_remote_state_s3_profile
 
     skip_region_validation      = true
     skip_credentials_validation = true

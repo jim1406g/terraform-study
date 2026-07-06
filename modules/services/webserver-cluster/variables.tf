@@ -18,6 +18,11 @@ variable "db_remote_state_key" {
   type        = string
 }
 
+variable "db_remote_state_s3_profile" {
+  description = "The name of the profile for S3 with database's remote state"
+  type        = string
+}
+
 variable "network_name" {
   description = "Yandex cloud network Name"
   type        = string

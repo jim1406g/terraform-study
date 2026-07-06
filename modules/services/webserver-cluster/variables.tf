@@ -1,3 +1,8 @@
+locals {
+  http_port = 80
+  all_ips   = ["0.0.0.0/0"]
+}
+
 variable "alb_external_address" {
   description = "Public address for ALB"
   type        = string

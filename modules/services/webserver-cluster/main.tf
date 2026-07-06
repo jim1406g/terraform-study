@@ -5,14 +5,14 @@ resource "yandex_vpc_security_group" "instance" {
   ingress {
     protocol       = "TCP"
     description    = "WEB"
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    v4_cidr_blocks = local.all_ips
     port           = var.server_port
   }
 
   egress {
     description    = "Permit ANY"
     protocol       = "ANY"
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    v4_cidr_blocks = local.all_ips
   }
 }
 
@@ -23,14 +23,14 @@ resource "yandex_vpc_security_group" "alb" {
   ingress {
     protocol       = "TCP"
     description    = "WEB"
-    v4_cidr_blocks = ["0.0.0.0/0"]
-    port           = 80
+    v4_cidr_blocks = local.all_ips
+    port           = local.http_port
   }
 
   egress {
     description    = "Permit ANY"
     protocol       = "ANY"
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    v4_cidr_blocks = local.all_ips
   }
 }
 
@@ -161,7 +161,7 @@ resource "yandex_alb_load_balancer" "webcl" {
           address = var.alb_external_address
         }
       }
-      ports = ["80"]
+      ports = [local.http_port]
     }
 
     http {

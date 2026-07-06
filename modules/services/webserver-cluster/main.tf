@@ -36,7 +36,7 @@ resource "yandex_vpc_security_group" "alb" {
 
 resource "yandex_compute_instance_group" "example" {
   name               = "terraform-example-instance-group"
-  service_account_id = var.service_account.id
+  service_account_id = var.service_account_id
 
   allocation_policy {
     zones = [var.zone_subnet.zone0.zone, var.zone_subnet.zone1.zone]

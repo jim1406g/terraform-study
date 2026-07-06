@@ -1,37 +1,45 @@
 resource "yandex_vpc_security_group" "instance" {
   name       = "${var.cluster_name}-instance-security-group"
   network_id = data.yandex_vpc_network.net.id
+}
 
-  ingress {
-    protocol       = "TCP"
-    description    = "WEB"
-    v4_cidr_blocks = local.all_ips
-    port           = var.server_port
-  }
+resource "yandex_vpc_security_group_rule" "instance_server_port_all_ip_inbound" {
+  security_group_binding = yandex_vpc_security_group.instance.id
+  direction              = "ingress"
+  protocol               = "TCP"
+  description            = "WEB"
+  v4_cidr_blocks         = local.all_ips
+  port                   = var.server_port
+}
 
-  egress {
-    description    = "Permit ANY"
-    protocol       = "ANY"
-    v4_cidr_blocks = local.all_ips
-  }
+resource "yandex_vpc_security_group_rule" "instance_allow_all_egress" {
+  security_group_binding = yandex_vpc_security_group.instance.id
+  direction              = "egress"
+  description            = "Permit ANY"
+  protocol               = "ANY"
+  v4_cidr_blocks         = local.all_ips
 }
 
 resource "yandex_vpc_security_group" "alb" {
   name       = "${var.cluster_name}-alb-security-group"
   network_id = data.yandex_vpc_network.net.id
+}
 
-  ingress {
-    protocol       = "TCP"
-    description    = "WEB"
-    v4_cidr_blocks = local.all_ips
-    port           = local.http_port
-  }
+resource "yandex_vpc_security_group_rule" "alb_http_all_ip_inbound" {
+  security_group_binding = yandex_vpc_security_group.alb.id
+  direction              = "ingress"
+  protocol               = "TCP"
+  description            = "WEB"
+  v4_cidr_blocks         = local.all_ips
+  port                   = local.http_port
+}
 
-  egress {
-    description    = "Permit ANY"
-    protocol       = "ANY"
-    v4_cidr_blocks = local.all_ips
-  }
+resource "yandex_vpc_security_group_rule" "alb_allow_all_egress" {
+  security_group_binding = yandex_vpc_security_group.alb.id
+  direction              = "egress"
+  description            = "Permit ANY"
+  protocol               = "ANY"
+  v4_cidr_blocks         = local.all_ips
 }
 
 resource "yandex_compute_instance_group" "webcl" {

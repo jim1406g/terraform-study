@@ -1,37 +1,6 @@
-terraform {
-  required_providers {
-    yandex = {
-      source = "yandex-cloud/yandex"
-    }
-  }
-  required_version = ">= 0.13"
-
-  backend "s3" {
-    endpoints = {
-      s3 = "https://storage.yandexcloud.net"
-    }
-    bucket = "terraform-up-and-running-state"
-    region = "ru-central1"
-    key    = "terraform-study/stage/services/webserver-cluster/terraform.tfstate"
-    # Статический ключ доступа для сервисного аккаунта (AWS-совместимый)
-    # mkdir -p ~/.aws
-    # cat > ~/.aws/credentials << EOF
-    # [jim1406-sa]
-    # aws_access_key_id = YCA...
-    # aws_secret_access_key = YCT...
-    # EOF
-    profile = "jim1406-sa"
-
-    skip_region_validation      = true
-    skip_credentials_validation = true
-    skip_requesting_account_id  = true # Необходимая опция Terraform для версии 1.6.1 и старше.
-    skip_s3_checksum            = true # Необходимая опция при описании бэкенда для Terraform версии 1.6.3 и старше.
-  }
-}
-
 provider "yandex" {
-  zone                     = var.zone_subnet.zone0.zone
+  zone                     = "ru-central1-b"
   cloud_id                 = "b1gv7nnhp4nje6bct6la"
   folder_id                = "b1g197129s2l7e4j8o6s"
-  service_account_key_file = var.service_account.key_file
+  service_account_key_file = "/home/jim1406/.config/yandex-cloud/jim1406-sa-key.json"
 }

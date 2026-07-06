@@ -67,7 +67,7 @@ resource "yandex_compute_instance_group" "example" {
     }
 
     metadata = {
-      user-data = templatefile("user-data.yaml", {
+      user-data = templatefile("${path.module}/user-data.yaml", {
         db_address  = data.terraform_remote_state.db.outputs.address
         db_port     = "3306"
         server_port = var.server_port

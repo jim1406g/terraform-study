@@ -23,6 +23,22 @@ variable "db_remote_state_s3_profile" {
   type        = string
 }
 
+variable "instance_template_platform_id" {
+  default     = "standard-v1"
+  description = "Platform for template of instances"
+  type        = string
+}
+
+variable "instance_template_resources" {
+  default = {
+    core_fraction = 5
+    cores         = 2
+    memory        = 4
+  }
+  description = "Resources for template of instances"
+  type        = map(number)
+}
+
 variable "network_name" {
   description = "Yandex cloud network Name"
   type        = string

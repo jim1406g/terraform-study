@@ -57,7 +57,7 @@ resource "yandex_compute_instance_group" "webcl" {
 
   instance_template {
     name        = "${var.cluster_name}-{instance.index}"
-    platform_id = "standard-v1"
+    platform_id = var.instance_template_platform_id
 
     boot_disk {
       initialize_params {
@@ -82,9 +82,9 @@ resource "yandex_compute_instance_group" "webcl" {
     }
 
     resources {
-      core_fraction = 5
-      cores         = 2
-      memory        = 4
+      core_fraction = var.instance_template_resources.core_fraction
+      cores         = var.instance_template_resources.cores
+      memory        = var.instance_template_resources.memory
     }
 
     scheduling_policy {

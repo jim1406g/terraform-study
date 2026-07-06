@@ -94,7 +94,7 @@ resource "yandex_compute_instance_group" "webcl" {
 
   scale_policy {
     fixed_scale {
-      size = 2
+      size = var.fixed_scale
     }
   }
 }

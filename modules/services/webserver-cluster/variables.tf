@@ -28,6 +28,12 @@ variable "db_remote_state_s3_profile" {
   type        = string
 }
 
+variable "fixed_scale" {
+  default     = 1
+  description = "Fixed scale for instance group"
+  type        = number
+}
+
 variable "instance_template_platform_id" {
   default     = "standard-v1"
   description = "Platform for template of instances"

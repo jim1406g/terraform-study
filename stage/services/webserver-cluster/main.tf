@@ -6,6 +6,7 @@ module "webserver_cluster" {
   db_remote_state_bucket     = "terraform-up-and-running-state"
   db_remote_state_key        = "terraform-study/stage/data-stores/mysql/terraform.tfstate"
   db_remote_state_s3_profile = var.service_account.s3_profile
+  fixed_scale                = 2
   network_name               = var.network_name
   service_account_id         = var.service_account.id
   zone_subnet                = var.zone_subnet

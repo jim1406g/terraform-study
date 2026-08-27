@@ -20,6 +20,16 @@ variable "example_user_names" {
   type        = list(string)
 }
 
+variable "example_hero_thousand_faces" {
+  default = {
+    neo      = "hero"
+    trinity  = "love interest"
+    morpheus = "metor"
+  }
+  description = "Example map kind of users"
+  type        = map(string)
+}
+
 variable "yc_cloud_id" {
   default     = "b1gv7nnhp4nje6bct6la"
   description = "Yandex cloud ID"

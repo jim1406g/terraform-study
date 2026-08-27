@@ -13,6 +13,12 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "labels" {
+  description = "Custom labels to set on Instances"
+  type        = map(string)
+  default     = {}
+}
+
 variable "db_remote_state_bucket" {
   description = "The name of the S3 bucket for the database's remote state"
   type        = string

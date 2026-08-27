@@ -1,4 +1,5 @@
 resource "yandex_vpc_security_group" "instance" {
+  labels     = var.labels
   name       = "${var.cluster_name}-instance-security-group"
   network_id = data.yandex_vpc_network.net.id
 }
@@ -21,6 +22,7 @@ resource "yandex_vpc_security_group_rule" "instance_allow_all_egress" {
 }
 
 resource "yandex_vpc_security_group" "alb" {
+  labels     = var.labels
   name       = "${var.cluster_name}-alb-security-group"
   network_id = data.yandex_vpc_network.net.id
 }
@@ -43,6 +45,7 @@ resource "yandex_vpc_security_group_rule" "alb_allow_all_egress" {
 }
 
 resource "yandex_compute_instance_group" "webcl" {
+  labels             = var.labels
   name               = "${var.cluster_name}-instance-group"
   service_account_id = var.service_account_id
 
@@ -64,6 +67,7 @@ resource "yandex_compute_instance_group" "webcl" {
   }
 
   instance_template {
+    labels      = var.labels
     name        = "${var.cluster_name}-{instance.index}"
     platform_id = var.instance_template_platform_id
 
@@ -108,7 +112,8 @@ resource "yandex_compute_instance_group" "webcl" {
 }
 
 resource "yandex_alb_backend_group" "webcl" {
-  name = "${var.cluster_name}-backend-group"
+  labels = var.labels
+  name   = "${var.cluster_name}-backend-group"
 
   http_backend {
     name             = "http-backend"
@@ -126,7 +131,8 @@ resource "yandex_alb_backend_group" "webcl" {
 }
 
 resource "yandex_alb_http_router" "webcl" {
-  name = "${var.cluster_name}-http-router"
+  labels = var.labels
+  name   = "${var.cluster_name}-http-router"
 }
 
 resource "yandex_alb_virtual_host" "webcl" {
@@ -145,6 +151,7 @@ resource "yandex_alb_virtual_host" "webcl" {
 }
 
 resource "yandex_alb_load_balancer" "webcl" {
+  labels             = var.labels
   name               = "${var.cluster_name}-alb"
   network_id         = data.yandex_vpc_network.net.id
   security_group_ids = [yandex_vpc_security_group.alb.id]

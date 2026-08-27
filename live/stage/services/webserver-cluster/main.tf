@@ -10,4 +10,9 @@ module "webserver_cluster" {
   network_name               = var.network_name
   service_account_id         = var.service_account.id
   zone_subnet                = var.zone_subnet
+
+  labels = {
+    owner      = "jim1406"
+    managed_by = "terraform"
+  }
 }

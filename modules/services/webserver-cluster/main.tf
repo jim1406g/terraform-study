@@ -156,14 +156,25 @@ resource "yandex_alb_load_balancer" "webcl" {
   network_id         = data.yandex_vpc_network.net.id
   security_group_ids = [yandex_vpc_security_group.alb.id]
 
+  # allocation_policy {
+  #   location {
+  #     subnet_id = var.zone_subnet.zone0.subnet_id
+  #     zone_id   = var.zone_subnet.zone0.zone
+  #   }
+  #   location {
+  #     subnet_id = var.zone_subnet.zone1.subnet_id
+  #     zone_id   = var.zone_subnet.zone1.zone
+  #   }
+  # }
+
   allocation_policy {
-    location {
-      subnet_id = var.zone_subnet.zone0.subnet_id
-      zone_id   = var.zone_subnet.zone0.zone
-    }
-    location {
-      subnet_id = var.zone_subnet.zone1.subnet_id
-      zone_id   = var.zone_subnet.zone1.zone
+    dynamic "location" {
+      for_each = var.zone_subnet
+
+      content {
+        subnet_id = location.value.subnet_id
+        zone_id   = location.value.zone
+      }
     }
   }
 

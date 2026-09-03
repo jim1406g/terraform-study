@@ -17,3 +17,11 @@ output "instance_security_group_id" {
   description = "The ID of the Security Group attached to the Instance Group"
   value       = yandex_vpc_security_group.instance.id
 }
+
+output "alb_current_egress_rule" {
+  description = "Current egress rule for alb for demonstration if-else output"
+  value = one(concat(
+    yandex_vpc_security_group_rule.alb_allow_all_egress,
+    yandex_vpc_security_group_rule.alb_allow_2_webcl_egress
+  ))
+}

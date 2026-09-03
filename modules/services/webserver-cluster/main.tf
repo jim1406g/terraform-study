@@ -39,11 +39,23 @@ resource "yandex_vpc_security_group_rule" "alb_http_all_ip_inbound" {
 }
 
 resource "yandex_vpc_security_group_rule" "alb_allow_all_egress" {
+  count = var.enable_alb_all_egress ? 1 : 0
+
   security_group_binding = yandex_vpc_security_group.alb.id
   direction              = "egress"
   description            = "Permit ANY"
   protocol               = "ANY"
   v4_cidr_blocks         = local.all_ips
+}
+
+resource "yandex_vpc_security_group_rule" "alb_allow_2_webcl_egress" {
+  count = var.enable_alb_all_egress ? 0 : 1
+
+  security_group_binding = yandex_vpc_security_group.alb.id
+  direction              = "egress"
+  description            = "Permit WEB-cluster"
+  protocol               = "ANY"
+  security_group_id      = yandex_vpc_security_group.instance.id
 }
 
 resource "yandex_compute_instance_group" "webcl" {

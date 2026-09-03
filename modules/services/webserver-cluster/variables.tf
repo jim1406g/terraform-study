@@ -13,6 +13,12 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "enable_alb_all_egress" {
+  default     = false
+  description = "Enable Permit ANY egress for alb"
+  type        = bool
+}
+
 variable "enable_instance_egress" {
   default     = false
   description = "Enable egress for web-cluster's instances"

@@ -6,11 +6,12 @@ module "webserver_cluster" {
   db_remote_state_bucket     = "terraform-up-and-running-state"
   db_remote_state_key        = "terraform-study/live/stage/data-stores/mysql/terraform.tfstate"
   db_remote_state_s3_profile = var.service_account.s3_profile
+  # enable_alb_all_egress      = true
   # enable_instance_egress     = true
-  fixed_scale                = 2
-  network_name               = var.network_name
-  service_account_id         = var.service_account.id
-  zone_subnet                = var.zone_subnet
+  fixed_scale        = 2
+  network_name       = var.network_name
+  service_account_id = var.service_account.id
+  zone_subnet        = var.zone_subnet
 
   labels = {
     owner      = "jim1406"

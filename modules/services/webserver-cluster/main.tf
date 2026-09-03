@@ -14,6 +14,8 @@ resource "yandex_vpc_security_group_rule" "instance_server_port_all_ip_inbound" 
 }
 
 resource "yandex_vpc_security_group_rule" "instance_allow_all_egress" {
+  count = var.enable_instance_egress ? 1 : 0
+
   security_group_binding = yandex_vpc_security_group.instance.id
   direction              = "egress"
   description            = "Permit ANY"

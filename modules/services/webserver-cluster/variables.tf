@@ -13,6 +13,12 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "enable_instance_egress" {
+  default     = false
+  description = "Enable egress for web-cluster's instances"
+  type        = bool
+}
+
 variable "labels" {
   description = "Custom labels to set on Instances"
   type        = map(string)

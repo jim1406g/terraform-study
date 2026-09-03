@@ -50,7 +50,8 @@ resource "yandex_compute_instance_group" "webcl" {
   service_account_id = var.service_account_id
 
   allocation_policy {
-    zones = [var.zone_subnet.zone0.zone, var.zone_subnet.zone1.zone]
+    # zones = [var.zone_subnet.zone0.zone, var.zone_subnet.zone1.zone]
+    zones = values(var.zone_subnet)[*].zone
   }
 
   application_load_balancer {

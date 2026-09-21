@@ -12,7 +12,7 @@ module "webserver_cluster" {
   fixed_scale        = 2
   network_name       = var.network_name
   service_account_id = var.service_account.id
-  server_text        = "Hello!!!"
+  server_text        = "foo bar"
   zone_subnet        = var.zone_subnet
 
   labels = {

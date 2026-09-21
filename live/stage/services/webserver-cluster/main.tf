@@ -1,7 +1,8 @@
 module "webserver_cluster" {
   source = "../../../../modules/services/webserver-cluster"
 
-  alb_external_address       = "158.160.173.249"
+  alb_external_address = "158.160.173.249"
+  boot_disk_id         = "fd83esfomhq25p2ono90"
   cluster_name               = "example-web-cluster"
   db_remote_state_bucket     = "terraform-up-and-running-state"
   db_remote_state_key        = "terraform-study/live/stage/data-stores/mysql/terraform.tfstate"
@@ -11,6 +12,7 @@ module "webserver_cluster" {
   fixed_scale        = 2
   network_name       = var.network_name
   service_account_id = var.service_account.id
+  server_text        = "Hello!!!"
   zone_subnet        = var.zone_subnet
 
   labels = {

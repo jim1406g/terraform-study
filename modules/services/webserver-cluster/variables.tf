@@ -1,6 +1,10 @@
 locals {
   http_port = 80
   all_ips   = ["0.0.0.0/0"]
+  template_instance_name = format("%s-%s-%s",
+    substr(sha256(data.terraform_remote_state.db.outputs.address), 0, 8),
+    substr(sha256(tostring(var.server_port)), 0, 8),
+  substr(sha256(var.server_text), 0, 8))
 }
 
 variable "alb_external_address" {
@@ -100,3 +104,16 @@ variable "zone_subnet" {
   description = "Zones and Subnets"
   type        = map(map(string))
 }
+
+variable "boot_disk_id" {
+  description = "ID of the boot disk to run in the cluster"
+  type        = string
+  default     = "fd83esfomhq25p2ono90"
+}
+
+variable "server_text" {
+  description = "The text the web server should return"
+  type        = string
+  default     = "Hello, World!"
+}
+

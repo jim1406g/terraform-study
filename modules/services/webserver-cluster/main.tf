@@ -79,17 +79,18 @@ resource "yandex_compute_instance_group" "webcl" {
     max_expansion    = 2
     max_unavailable  = 1
     startup_duration = 120
+    strategy         = "proactive"
   }
 
   instance_template {
     labels      = var.labels
-    name        = "${var.cluster_name}-{instance.index}"
+    name        = "${var.cluster_name}-{instance.index}--${local.template_instance_name}"
     platform_id = var.instance_template_platform_id
 
     boot_disk {
       initialize_params {
         # ubuntu-24-04-lts-v20260413 (yc compute image list --folder-id standard-images)
-        image_id = "fd83esfomhq25p2ono90"
+        image_id = var.boot_disk_id
       }
     }
 
@@ -98,6 +99,7 @@ resource "yandex_compute_instance_group" "webcl" {
         db_address  = data.terraform_remote_state.db.outputs.address
         db_port     = "3306"
         server_port = var.server_port
+        server_text = var.server_text
       })
     }
 

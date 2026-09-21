@@ -184,7 +184,12 @@ resource "yandex_alb_load_balancer" "webcl" {
 
   allocation_policy {
     dynamic "location" {
-      for_each = var.zone_subnet
+      # for_each = var.zone_subnet
+      for_each = {
+        for key, value in var.zone_subnet :
+        key => value
+        if value.zone != "ru-central1-c"
+      }
 
       content {
         subnet_id = location.value.subnet_id
